@@ -288,11 +288,6 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
-#Solution file and project files
-*.sln
-*.vcxproj
-*.vcxproj.filters
-
 #--------------------vscode-----------------------
 .vscode/
 .vs
