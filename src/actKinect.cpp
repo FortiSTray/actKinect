@@ -153,7 +153,7 @@ void ActKinect::detectBall()
 		Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
 		int radius = cvRound(circles[i][2]);
 
-		circle(depthImage, center, radius, Scalar(155, 50, 255), 3, 8, 0);
+		circle(depthImage, center, radius, 200, 3, 8, 0);
 	}
 	imshow("ballPosition", depthImage);
 }
@@ -162,7 +162,6 @@ void ActKinect::getForeground()
 {
 	cvtColor(depthToColor, depthToColor, COLOR_BGRA2BGR);
 	Mat realImage = depthToColor.clone();
-	//resize(depthToColor, realImage, Size(320, 240));
 
 	if (fgImage.empty())
 	{
@@ -188,4 +187,82 @@ void ActKinect::getForeground()
 	//{
 	//	imshow("mean background image", bgImage);
 	//}
+}
+
+void ActKinect::ballTrack()
+{
+	if (circles.size() != 0)
+	{
+		int depthCounter = 0;
+		int pointNumCounter = 0;
+		float depthValue = 0.0f;
+
+		int xBasic = cvRound(circles[0][0]);
+		int yBasic = cvRound(circles[0][1]);
+
+		if (depthImage.ptr(yBasic)[xBasic] != 0.0f)
+		{
+			depthValue += depthImage.ptr(yBasic)[xBasic];
+			depthCounter++;
+		}
+		pointNumCounter++;
+		depthImage.ptr(yBasic)[xBasic] = 200;
+		stkBall.push_back({ xBasic, yBasic});
+
+		while (!stkBall.empty())
+		{
+			auto pix = stkBall.back();
+			stkBall.pop_back();
+
+			auto row0 = pix.y - 1, row1 = pix.y, row2 = pix.y + 1;
+			auto col0 = pix.x - 1, col1 = pix.x, col2 = pix.x + 1;
+
+#define _PASS_(x, y) do \
+					{ \
+						if (depthImage.ptr(y)[x] != 0.0f) \
+						{ \
+							depthValue += depthImage.ptr(y)[x]; \
+							depthCounter++; \
+						} \
+						pointNumCounter++; \
+						depthImage.ptr(y)[x] = 200; \
+						stkBall.push_back({ x, y }); \
+					}while (0)
+
+			//row0
+			if (row0 >= 0 && col0 >= 0 && depthImage.ptr(row0)[col0] != 200)
+				_PASS_(col0, row0);
+			if (row0 >= 0 && depthImage.ptr(row0)[col1] != 200)
+				_PASS_(col1, row0);
+			if (row0 >= 0 && col2 < depthImage.cols && depthImage.ptr(row0)[col2] != 200)
+				_PASS_(col2, row0);
+			//row1
+			if (col0 >= 0 && depthImage.ptr(row1)[col0] != 200)
+				_PASS_(col0, row1);
+			if (col2 < depthImage.cols && depthImage.ptr(row1)[col2] != 200)
+				_PASS_(col2, row1);
+			//row2
+			if (row2 < depthImage.rows && col0 >= 0 && depthImage.ptr(row2)[col0] != 200)
+				_PASS_(col0, row2);
+			if (row2 < depthImage.rows && depthImage.ptr(row2)[col1] != 200)
+				_PASS_(col1, row2);
+			if (row2 < depthImage.rows && col2 < depthImage.cols && depthImage.ptr(row2)[col2] != 200)
+				_PASS_(col2, row2);
+
+#undef _PASS_
+
+			if (pointNumCounter >= 50) { break; }
+		}
+		
+		if (depthCounter != 0)
+		{
+			depthValue /= (float)depthCounter;
+
+			ballCoorX = xBasic;
+			ballCoorY = yBasic;
+			ballCoorZ = cvRound(depthValue / 255.0f * 4500.0f);
+
+			std::cout << ballCoorX << " " << ballCoorY << " " << ballCoorZ << endl;
+		}
+	}
 }

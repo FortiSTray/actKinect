@@ -37,6 +37,7 @@ public:
 
 	void getForeground();
 
+	void ballTrack();
 
 private:
 	IKinectSensor*     pKinectSensor;
@@ -60,6 +61,12 @@ private:
 	int record = 1;
 
 	std::vector<cv::Vec3f> circles;
+
+	std::vector<cv::Point> stkBall;
+	int ballCoorX;
+	int ballCoorY;
+	int ballCoorZ;
+	std::vector<cv::Vec3i> ballCoor;
 
 	int depthHeight = 0, depthWidth = 0;
 	int colorHeight = 0, colorWidth = 0;
