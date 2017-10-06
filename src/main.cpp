@@ -20,7 +20,7 @@ int main()
 
 		actKinect.coordinateMapping();
 
-		if (waitKey(15) == VK_ESCAPE)
+		if (waitKey(30) == VK_ESCAPE)
 			break;
 	}
 
