@@ -1,5 +1,8 @@
 #include "actKinect.h"
 
+using namespace std;
+using namespace cv;
+
 ActKinect::ActKinect() : pKinectSensor(NULL), pDepthReader(NULL), pColorReader(NULL), 
 						 pDepthFrame(NULL), pColorFrame(NULL), pCoordinateMapper(NULL)
 {
@@ -72,7 +75,7 @@ void ActKinect::updateDepth()
 	{
 		pDepthFrame->CopyFrameDataToArray(depthHeight * depthWidth, (UINT16*)depthTemp.data);
 		depthTemp.convertTo(depthImage, CV_8UC1, 255.0 / 4500);
-		cv::imshow("Depth", depthImage);
+		//cv::imshow("Depth", depthImage);
 		pDepthFrame->Release();
 	}
 }
@@ -83,7 +86,7 @@ void ActKinect::updateColor()
 	{
 		pColorFrame->CopyConvertedFrameDataToArray(colorHeight*colorWidth * 4, colorTemp.data, ColorImageFormat_Bgra);
 		cv::cvtColor(colorTemp, colorImage, CV_BGRA2BGR);
-		cv::imshow("Color", colorImage);
+		//cv::imshow("Color", colorImage);
 		pColorFrame->Release();
 	}
 }
@@ -118,8 +121,37 @@ void ActKinect::coordinateMapping()
 			}
 		}
 	}
-	cv::Mat depthToColor = cv::Mat(depthHeight, depthWidth, CV_8UC4, &depthBuffer[0]).clone();
+	depthToColor = cv::Mat(depthHeight, depthWidth, CV_8UC4, &depthBuffer[0]).clone();
 	cv::imshow("DtoC", depthToColor);
 
 	delete[] pColorCoordinates;
+}
+
+void ActKinect::detectBall()
+{
+	cvtColor(depthToColor, depthToColor, COLOR_BGRA2GRAY);
+
+	cv::Mat equaImage(depthToColor.rows, depthToColor.cols, CV_8UC1);
+	equalizeHist(depthToColor, equaImage);
+	imshow("equa", equaImage);
+
+	GaussianBlur(depthToColor, depthToColor, Size(5, 5), 2, 2);
+	medianBlur(equaImage, equaImage, 3);
+	imshow("bulr", equaImage);
+
+	cv::Mat cannyImage(depthToColor.rows, depthToColor.cols, CV_8UC1);
+	Canny(equaImage, cannyImage, 60, 120);
+	imshow("canny", cannyImage);
+
+
+	cv::HoughCircles(depthToColor, circles, CV_HOUGH_GRADIENT, 2.5, 3000, 170, 70, 10, 40);
+
+	for (size_t i = 0; i < circles.size(); i++)
+	{
+		Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+		int radius = cvRound(circles[i][2]);
+
+		circle(depthImage, center, radius, Scalar(155, 50, 255), 3, 8, 0);
+	}
+	imshow("ballPosition", depthImage);
 }

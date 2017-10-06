@@ -31,6 +31,8 @@ public:
 
 	void coordinateMapping();
 
+	void detectBall();
+
 
 private:
 	IKinectSensor*     pKinectSensor;
@@ -45,6 +47,9 @@ private:
 	cv::Mat colorTemp;
 	cv::Mat depthImage;
 	cv::Mat colorImage;
+	cv::Mat depthToColor;
+
+	std::vector<cv::Vec3f> circles;
 
 	int depthHeight = 0, depthWidth = 0;
 	int colorHeight = 0, colorWidth = 0;
