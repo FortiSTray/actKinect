@@ -4,6 +4,7 @@
 
 #include "kinect.h"
 #include "opencv2\opencv.hpp"
+#include <time.h>
 
 //Safe release for interfaces
 template<class Interface>
@@ -22,11 +23,13 @@ public:
 	ActKinect();
 	~ActKinect();
 	
-	void InitDepthSensor();
-	void InitColorSensor();
+	void initDepthSensor();
+	void initColorSensor();
 
 	void updateDepth();
 	void updateColor();
+
+	void coordinateMapping();
 
 
 private:
@@ -36,11 +39,13 @@ private:
 	IDepthFrame*       pDepthFrame;
 	IColorFrame*       pColorFrame;
 
+	ICoordinateMapper* pCoordinateMapper;
+
 	cv::Mat depthTemp;
 	cv::Mat colorTemp;
-
 	cv::Mat depthImage;
 	cv::Mat colorImage;
+
 	int depthHeight = 0, depthWidth = 0;
 	int colorHeight = 0, colorWidth = 0;
 };

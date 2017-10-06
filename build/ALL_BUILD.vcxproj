@@ -164,9 +164,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{F52C65DF-A028-3B62-87E4-21A13D47329D}</Project>
       <Name>ZERO_CHECK</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Code\actKinect\build\actKniect.vcxproj">
-      <Project>{F0FC8FCB-2957-32EF-8D66-4C3DD5E199A5}</Project>
-      <Name>actKniect</Name>
+    <ProjectReference Include="C:\Code\actKinect\build\actKinect.vcxproj">
+      <Project>{16C1EE50-AB55-30A5-BCD1-B53180F739C1}</Project>
+      <Name>actKinect</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

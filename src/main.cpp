@@ -10,15 +10,17 @@ int main()
 {
 	ActKinect actKinect;
 
-	actKinect.InitDepthSensor();
-	actKinect.InitColorSensor();
+	actKinect.initDepthSensor();
+	actKinect.initColorSensor();
 
 	while (true)
 	{
 		actKinect.updateDepth();
 		actKinect.updateColor();
 
-		if (waitKey(30) == VK_ESCAPE)
+		actKinect.coordinateMapping();
+
+		if (waitKey(15) == VK_ESCAPE)
 			break;
 	}
 

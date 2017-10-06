@@ -1,13 +1,19 @@
 #include "actKinect.h"
 
 ActKinect::ActKinect() : pKinectSensor(NULL), pDepthReader(NULL), pColorReader(NULL), 
-						 pDepthFrame(NULL), pColorFrame(NULL)
+						 pDepthFrame(NULL), pColorFrame(NULL), pCoordinateMapper(NULL)
 {
+	//open kinect sensor
 	GetDefaultKinectSensor(&pKinectSensor);
 	pKinectSensor->Open();
+
+	//get coordinate mapper
+	pKinectSensor->get_CoordinateMapper(&pCoordinateMapper);
 }
 ActKinect::~ActKinect()
 {
+	SafeRelease(pCoordinateMapper);
+
 	SafeRelease(pColorReader);
 	SafeRelease(pDepthReader);
 
@@ -18,7 +24,7 @@ ActKinect::~ActKinect()
 	SafeRelease(pKinectSensor);
 }
 
-void ActKinect::InitDepthSensor()
+void ActKinect::initDepthSensor()
 {
 	//get frame source
 	IDepthFrameSource* pDepthSource = nullptr;
@@ -39,7 +45,7 @@ void ActKinect::InitDepthSensor()
 	depthImage = cv::Mat::zeros(depthHeight, depthWidth, CV_8UC1 );
 }
 
-void ActKinect::InitColorSensor()
+void ActKinect::initColorSensor()
 {
 	//get frame source
 	IColorFrameSource* pColorSource = nullptr;
@@ -80,4 +86,40 @@ void ActKinect::updateColor()
 		cv::imshow("Color", colorImage);
 		pColorFrame->Release();
 	}
+}
+
+void ActKinect::coordinateMapping()
+{
+	//map coordinate from depth image to color image
+	ColorSpacePoint* pColorCoordinates = new ColorSpacePoint[depthHeight * depthWidth];
+	pCoordinateMapper->MapDepthFrameToColorSpace(depthHeight * depthWidth, (UINT16*)depthTemp.data,
+		depthHeight * depthWidth, pColorCoordinates);
+
+	//draw depthToColor image
+	std::vector<BYTE> depthBuffer(depthWidth * depthHeight * 4);
+	for (int depthY = 0; depthY < depthHeight; depthY++)
+	{
+		const unsigned int depthOffset = depthY * depthWidth;
+		for (int depthX = 0; depthX < depthWidth; depthX++)
+		{
+			unsigned int depthIndex = depthOffset + depthX;
+			const int colorX = static_cast<int>(pColorCoordinates[depthIndex].X + 0.5f);
+			const int colorY = static_cast<int>(pColorCoordinates[depthIndex].Y + 0.5f);
+
+			//copy point from color image to depth image
+			if ((colorX >= 0 && colorX < colorWidth) && (colorY >= 0 && colorY < colorHeight))
+			{
+				const unsigned int colorIndex = (colorY * colorWidth + colorX) * 4;
+				depthIndex = depthIndex * 4;
+				depthBuffer[depthIndex + 0] = colorTemp.data[colorIndex + 0];
+				depthBuffer[depthIndex + 1] = colorTemp.data[colorIndex + 1];
+				depthBuffer[depthIndex + 2] = colorTemp.data[colorIndex + 2];
+				depthBuffer[depthIndex + 3] = colorTemp.data[colorIndex + 3];
+			}
+		}
+	}
+	cv::Mat depthToColor = cv::Mat(depthHeight, depthWidth, CV_8UC4, &depthBuffer[0]).clone();
+	cv::imshow("DtoC", depthToColor);
+
+	delete[] pColorCoordinates;
 }
