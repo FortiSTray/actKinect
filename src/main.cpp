@@ -6,12 +6,21 @@
 using namespace std;
 using namespace cv;
 
+//#define DEBUG
+#ifdef NDEBUG
+#define NODE /##/
+#else
+#define NODE 
+#endif // DEBUG
+
+
 int main()
 {
 	ActKinect actKinect;
 
 	actKinect.InitDepthSensor();
 	actKinect.InitColorSensor();
+	actKinect.InitCoordinateMap();
 
 	while (true)
 	{

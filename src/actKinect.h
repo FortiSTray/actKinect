@@ -2,6 +2,9 @@
 #ifndef __ACT_KINECT
 #define __ACT_KINECT
 
+
+
+
 #include "kinect.h"
 #include "opencv2\opencv.hpp"
 
@@ -24,9 +27,12 @@ public:
 	
 	void InitDepthSensor();
 	void InitColorSensor();
+	void InitCoordinateMap();
+
 
 	void updateDepth();
 	void updateColor();
+
 
 
 private:
@@ -35,7 +41,14 @@ private:
 	IColorFrameReader* pColorReader;
 	IDepthFrame*       pDepthFrame;
 	IColorFrame*       pColorFrame;
-
+//
+	ICoordinateMapper * mapper;
+	
+	UINT32 DF_2_CSCount;
+	PointF*DF_2_CSTable;
+	UINT16*ary16;
+	ColorSpacePoint *colorSpacePoints;
+//
 	cv::Mat depthTemp;
 	cv::Mat colorTemp;
 
