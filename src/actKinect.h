@@ -5,6 +5,8 @@
 #include "kinect.h"
 #include "opencv2\opencv.hpp"
 #include <time.h>
+#include <thread>
+#include <ppl.h>
 
 //Safe release for interfaces
 template<class Interface>
@@ -31,6 +33,7 @@ public:
 
 	void coordinateMapping();
 
+	friend void quickClone(cv::Mat& src,const cv::Mat& templ);
 
 private:
 	IKinectSensor*     pKinectSensor;
