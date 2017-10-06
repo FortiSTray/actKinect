@@ -3,7 +3,9 @@
 #define __ACT_KINECT
 
 #include "kinect.h"
-#include "opencv2\opencv.hpp"
+#include "opencv2/opencv.hpp"
+#include "opencv2/video/background_segm.hpp"
+#include <iostream>
 #include <time.h>
 
 //Safe release for interfaces
@@ -33,6 +35,8 @@ public:
 
 	void detectBall();
 
+	void getForeground();
+
 
 private:
 	IKinectSensor*     pKinectSensor;
@@ -47,7 +51,13 @@ private:
 	cv::Mat colorTemp;
 	cv::Mat depthImage;
 	cv::Mat colorImage;
+
 	cv::Mat depthToColor;
+
+	cv::BackgroundSubtractorMOG2 bgModel;
+	cv::Mat fgImage;
+	cv::Mat fgMask;
+	int record = 1;
 
 	std::vector<cv::Vec3f> circles;
 

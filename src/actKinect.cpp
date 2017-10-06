@@ -129,22 +129,24 @@ void ActKinect::coordinateMapping()
 
 void ActKinect::detectBall()
 {
-	cvtColor(depthToColor, depthToColor, COLOR_BGRA2GRAY);
+	getForeground();
 
-	cv::Mat equaImage(depthToColor.rows, depthToColor.cols, CV_8UC1);
-	equalizeHist(depthToColor, equaImage);
+	cvtColor(fgImage, fgImage, COLOR_BGR2GRAY);
+
+	cv::Mat equaImage(fgImage.rows, fgImage.cols, CV_8UC1);
+	equalizeHist(fgImage, equaImage);
 	imshow("equa", equaImage);
 
-	GaussianBlur(depthToColor, depthToColor, Size(5, 5), 2, 2);
-	medianBlur(equaImage, equaImage, 3);
+	GaussianBlur(fgImage, fgImage, Size(5, 5), 2, 2);
+	medianBlur(equaImage, equaImage, 5);
 	imshow("bulr", equaImage);
 
-	cv::Mat cannyImage(depthToColor.rows, depthToColor.cols, CV_8UC1);
+	cv::Mat cannyImage(fgImage.rows, fgImage.cols, CV_8UC1);
 	Canny(equaImage, cannyImage, 60, 120);
 	imshow("canny", cannyImage);
 
 
-	cv::HoughCircles(depthToColor, circles, CV_HOUGH_GRADIENT, 2.5, 3000, 170, 70, 10, 40);
+	cv::HoughCircles(fgImage, circles, CV_HOUGH_GRADIENT, 2.5, 3000, 170, 40, 5, 40);
 
 	for (size_t i = 0; i < circles.size(); i++)
 	{
@@ -154,4 +156,36 @@ void ActKinect::detectBall()
 		circle(depthImage, center, radius, Scalar(155, 50, 255), 3, 8, 0);
 	}
 	imshow("ballPosition", depthImage);
+}
+
+void ActKinect::getForeground()
+{
+	cvtColor(depthToColor, depthToColor, COLOR_BGRA2BGR);
+	Mat realImage = depthToColor.clone();
+	//resize(depthToColor, realImage, Size(320, 240));
+
+	if (fgImage.empty())
+	{
+		fgImage.create(realImage.size(), realImage.type());
+	}
+
+	//update the model
+	cvtColor(realImage, realImage, CV_BGRA2BGR);
+
+	bgModel(realImage, fgMask, record ? -1 : 0);
+
+	fgImage = Scalar::all(0);
+
+	realImage.copyTo(fgImage, fgMask);
+
+	Mat bgImage;
+	bgModel.getBackgroundImage(bgImage);
+
+	//imshow("image", realImage);
+	//imshow("foreground mask", fgMask);
+	imshow("foreground image", fgImage);
+	//if (!bgImage.empty())
+	//{
+	//	imshow("mean background image", bgImage);
+	//}
 }

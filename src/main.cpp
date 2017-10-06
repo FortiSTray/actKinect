@@ -21,6 +21,7 @@ int main()
 		actKinect.coordinateMapping();
 
 		actKinect.detectBall();
+		
 
 		if (waitKey(30) == VK_ESCAPE)
 			break;
