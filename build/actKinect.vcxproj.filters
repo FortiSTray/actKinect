@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Code\actKinect\src\actKinect.cpp">
+    <ClCompile Include="D:\Users\Haoan Feng\Documents\actKinect\src\actKinect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Code\actKinect\src\main.cpp">
+    <ClCompile Include="D:\Users\Haoan Feng\Documents\actKinect\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Code\actKinect\CMakeLists.txt" />
+    <CustomBuild Include="D:\Users\Haoan Feng\Documents\actKinect\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{91496FA1-873E-3D3A-B6CE-B0C3BC8B24CB}</UniqueIdentifier>
+      <UniqueIdentifier>{FC3C72A4-E0F8-3388-8BF7-3641013D46DC}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
