@@ -105,15 +105,21 @@ void ActKinect::coordinateMapping()
 
 	//draw depthToColor image
 	std::vector<BYTE> depthBuffer(depthWidth * depthHeight * 4);
-	Concurrency::parallel_for(0, depthHeight, [&](const int depthY) {
+	Concurrency::parallel_for(0, depthHeight, [&](const int depthY)
+	{
 		const unsigned int depthOffset = depthY * depthWidth;
-		for (int depthX = 0; depthX < depthWidth; depthX++) {
+		for (int depthX = 0; depthX < depthWidth; depthX++)
+		{
 			unsigned int depthIndex = depthOffset + depthX;
+
 			const int colorX = static_cast<int>(pColorCoordinates[depthIndex].X + 0.5f);
 			const int colorY = static_cast<int>(pColorCoordinates[depthIndex].Y + 0.5f);
-			if ((0 <= colorX) && (colorX < colorWidth) && (0 <= colorY) && (colorY < colorHeight)) {
+
+			if ((colorX >= 0) && (colorX < colorWidth) && (colorY >= 0) && (colorY < colorHeight))
+			{
 				const unsigned int colorIndex = (colorY * colorWidth + colorX) * 4;
 				depthIndex = depthIndex * 4;
+
 				depthBuffer[depthIndex + 0] = colorTemp.data[colorIndex + 0];
 				depthBuffer[depthIndex + 1] = colorTemp.data[colorIndex + 1];
 				depthBuffer[depthIndex + 2] = colorTemp.data[colorIndex + 2];
@@ -122,6 +128,7 @@ void ActKinect::coordinateMapping()
 		}
 
 	});
+
 	depthToColor = cv::Mat(depthHeight, depthWidth, CV_8UC4, &depthBuffer[0]).clone();
 	cv::imshow("DtoC", depthToColor);
 
