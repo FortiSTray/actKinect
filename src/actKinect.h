@@ -8,6 +8,9 @@
 #include <iostream>
 #include <time.h>
 #include <math.h>
+#include <thread>
+#include <ppl.h>
+
 
 //Safe release for interfaces
 template<class Interface>
@@ -34,11 +37,13 @@ public:
 
 	void coordinateMapping();
 
+
 	void detectBall();
 
 	void getForeground();
 
 	void ballTrack();
+
 
 private:
 	IKinectSensor*     pKinectSensor;
