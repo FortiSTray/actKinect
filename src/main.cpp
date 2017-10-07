@@ -9,7 +9,7 @@ using namespace cv;
 
 int main()
 {
-	//freopen("ballTrackData.txt", "w", stdout);
+	freopen("ballTrackData.txt", "w", stdout);
 
 	ActKinect actKinect;
 
@@ -26,7 +26,7 @@ int main()
 		actKinect.detectBall();
 		actKinect.ballTrack();
 
-		if (waitKey(30) == VK_ESCAPE)
+		if (waitKey(5) == VK_ESCAPE)
 			break;
 	}
 

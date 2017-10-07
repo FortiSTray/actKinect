@@ -7,6 +7,7 @@
 #include "opencv2/video/background_segm.hpp"
 #include <iostream>
 #include <time.h>
+#include <math.h>
 
 //Safe release for interfaces
 template<class Interface>
@@ -67,6 +68,8 @@ private:
 	int ballCoorY;
 	int ballCoorZ;
 	std::vector<cv::Vec3i> ballCoor;
+	cv::Vec3i currentBall;
+	cv::Vec3i orbitTail;
 
 	int depthHeight = 0, depthWidth = 0;
 	int colorHeight = 0, colorWidth = 0;

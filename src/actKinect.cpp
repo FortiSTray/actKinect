@@ -12,14 +12,19 @@ ActKinect::ActKinect() : pKinectSensor(NULL), pDepthReader(NULL), pColorReader(N
 
 	//get coordinate mapper
 	pKinectSensor->get_CoordinateMapper(&pCoordinateMapper);
+
+	orbitTail = { 0, 0, 0 };
 }
 ActKinect::~ActKinect()
 {
+	//release coordinate mapper
 	SafeRelease(pCoordinateMapper);
 
+	//release reader
 	SafeRelease(pColorReader);
 	SafeRelease(pDepthReader);
 
+	//close kinect sensor
 	if (pKinectSensor)
 	{
 		pKinectSensor->Close();
@@ -122,7 +127,7 @@ void ActKinect::coordinateMapping()
 		}
 	}
 	depthToColor = cv::Mat(depthHeight, depthWidth, CV_8UC4, &depthBuffer[0]).clone();
-	cv::imshow("DtoC", depthToColor);
+	//cv::imshow("DtoC", depthToColor);
 
 	delete[] pColorCoordinates;
 }
@@ -135,18 +140,18 @@ void ActKinect::detectBall()
 
 	cv::Mat equaImage(fgImage.rows, fgImage.cols, CV_8UC1);
 	equalizeHist(fgImage, equaImage);
-	imshow("equa", equaImage);
+	//imshow("equa", equaImage);
 
 	GaussianBlur(fgImage, fgImage, Size(5, 5), 2, 2);
 	medianBlur(equaImage, equaImage, 5);
-	imshow("bulr", equaImage);
+	//imshow("bulr", equaImage);
 
 	cv::Mat cannyImage(fgImage.rows, fgImage.cols, CV_8UC1);
-	Canny(equaImage, cannyImage, 60, 120);
-	imshow("canny", cannyImage);
+	Canny(equaImage, cannyImage, 125, 259);
+	//imshow("canny", cannyImage);
 
 
-	cv::HoughCircles(fgImage, circles, CV_HOUGH_GRADIENT, 2.5, 3000, 170, 40, 5, 40);
+	cv::HoughCircles(fgImage, circles, CV_HOUGH_GRADIENT, 2.5, 3000, 250, 40, 5, 40);
 
 	for (size_t i = 0; i < circles.size(); i++)
 	{
@@ -182,7 +187,7 @@ void ActKinect::getForeground()
 
 	//imshow("image", realImage);
 	//imshow("foreground mask", fgMask);
-	imshow("foreground image", fgImage);
+	//imshow("foreground image", fgImage);
 	//if (!bgImage.empty())
 	//{
 	//	imshow("mean background image", bgImage);
@@ -195,6 +200,7 @@ void ActKinect::ballTrack()
 	{
 		int depthCounter = 0;
 		int pointNumCounter = 0;
+		int loseCounter = 0;
 		float depthValue = 0.0f;
 
 		int xBasic = cvRound(circles[0][0]);
@@ -258,11 +264,26 @@ void ActKinect::ballTrack()
 		{
 			depthValue /= (float)depthCounter;
 
-			ballCoorX = xBasic;
-			ballCoorY = yBasic;
-			ballCoorZ = cvRound(depthValue / 255.0f * 4500.0f);
+			currentBall[0] = xBasic;
+			currentBall[1] = yBasic;
+			currentBall[2] = cvRound(depthValue / 255.0f * 4500.0f);
 
-			std::cout << ballCoorX << " " << ballCoorY << " " << ballCoorZ << endl;
+			if (abs(currentBall[2] - orbitTail[2]) < 1000)
+			{
+				std::cout << currentBall[0] << " " << currentBall[1] << " " << currentBall[2] << endl;
+
+				orbitTail[0] = currentBall[0];
+				orbitTail[1] = currentBall[1];
+				orbitTail[2] = currentBall[2];
+
+				loseCounter = 0;
+			}
+			else
+			{
+				if (loseCounter < 4) { loseCounter++; }
+			}
+
+			if (loseCounter == 4) { orbitTail = { 0, 0, 0 }; }
 		}
 	}
 }
