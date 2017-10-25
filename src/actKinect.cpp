@@ -13,6 +13,8 @@ ActKinect::ActKinect() : pKinectSensor(NULL), pDepthReader(NULL), pColorReader(N
 	//get coordinate mapper
 	pKinectSensor->get_CoordinateMapper(&pCoordinateMapper);
 
+	bgModel = createBackgroundSubtractorMOG2().dynamicCast<BackgroundSubtractor>();
+
 	orbitTail = { 0, 0, 0 };
 }
 ActKinect::~ActKinect()
@@ -80,7 +82,7 @@ void ActKinect::updateDepth()
 	{
 		pDepthFrame->CopyFrameDataToArray(depthHeight * depthWidth, (UINT16*)depthTemp.data);
 		depthTemp.convertTo(depthImage, CV_8UC1, 255.0 / 4500);
-		//cv::imshow("Depth", depthImage);
+		cv::imshow("Depth", depthImage);
 		pDepthFrame->Release();
 	}
 }
@@ -179,14 +181,15 @@ void ActKinect::getForeground()
 	//update the model
 	cvtColor(realImage, realImage, CV_BGRA2BGR);
 
-	bgModel(realImage, fgMask, record ? -1 : 0);
+	bgModel->apply(realImage, fgMask, record ? -1 : 0);
 
 	fgImage = Scalar::all(0);
 
 	realImage.copyTo(fgImage, fgMask);
 
 	Mat bgImage;
-	bgModel.getBackgroundImage(bgImage);
+	bgModel->getBackgroundImage(bgImage);
+
 
 	//imshow("image", realImage);
 	//imshow("foreground mask", fgMask);

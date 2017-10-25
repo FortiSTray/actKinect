@@ -11,6 +11,8 @@
 #include <thread>
 #include <ppl.h>
 
+using namespace std;
+using namespace cv;
 
 //Safe release for interfaces
 template<class Interface>
@@ -61,7 +63,7 @@ private:
 
 	cv::Mat depthToColor;
 
-	cv::BackgroundSubtractorMOG2 bgModel;
+	cv::Ptr<cv::BackgroundSubtractor> bgModel;
 	cv::Mat fgImage;
 	cv::Mat fgMask;
 	int record = 1;
