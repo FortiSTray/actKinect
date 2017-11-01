@@ -5,9 +5,10 @@ project(${PROJ_NAME})
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-aux_source_directory(src SOURCE_DIR)
+FILE(GLOB HEADER_LIST "src/*.h")
+FILE(GLOB SOURCE_LIST "src/*.cpp")
 
-add_executable(${PROJ_NAME} ${SOURCE_DIR})
+add_executable(${PROJ_NAME} ${SOURCE_LIST} ${HEADER_LIST})
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJ_NAME})
 
 #OpenCV

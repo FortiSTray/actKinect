@@ -353,6 +353,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClCompile Include="C:\Code\actKinect\src\actKinect.cpp"  />
     <ClCompile Include="C:\Code\actKinect\src\main.cpp"  />
+    <ClInclude Include="C:\Code\actKinect\src\actKinect.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Code\actKinect\build\ZERO_CHECK.vcxproj">
