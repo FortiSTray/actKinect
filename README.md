@@ -1,2 +1,2 @@
 # actKinect
-A repository for kinect development in Action-HunNan
+A repository for Kinect development in Action
